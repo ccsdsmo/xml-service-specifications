@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mal:specification xmlns:com="http://www.ccsds.org/schema/COMSchema"
+                   xmlns:svg="http://www.w3.org/2000/svg"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:mal="http://www.ccsds.org/schema/ServiceSchema">
+  <mal:area name="MC" number="4" version="2"
+            comment="The M&amp;C services provide operations for generic monitoring and control of a remote service provider (e.g., a spacecraft or ground system component).">
+    <mal:service xsi:type="com:ExtendedServiceType" name="Action" number="1"
+                 comment="The action service allows consumers to submit an action for execution and to subsequently monitor the execution progress of these actions.">
+      <mal:capabilitySet number="1">
+        <mal:submitIP name="requestExecution" number="7" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="executionRequest" canBeNull="false" comment="">
+                <mal:type name="ActionExecutionRequest" area="MC"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="DUPLICATE"/>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="INVALID"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="4">
+        <mal:pubsubIP name="monitorActionExec" number="8" comment="">
+          <mal:messages>
+            <mal:subscriptionKeys>
+              <mal:field name="requestId" canBeNull="false" comment="">
+                <mal:type area="MAL" name="Long"/>
+              </mal:field>
+              <mal:field name="actionKey" canBeNull="false" comment="">
+                <mal:type area="MAL" name="Identifier"/>
+              </mal:field>
+              <mal:field name="actionCategory" canBeNull="false" comment="">
+                <mal:type area="MAL" name="UOctet"/>
+              </mal:field>
+            </mal:subscriptionKeys>
+            <mal:publishNotify>
+              <mal:field name="progressEvent" canBeNull="false" comment="">
+                <mal:type name="ActionProgressBaseEvent" area="MC"/>
+              </mal:field>
+            </mal:publishNotify>
+          </mal:messages>
+        </mal:pubsubIP>
+      </mal:capabilitySet>
+    </mal:service>
+    <mal:service xsi:type="com:ExtendedServiceType" name="Parameter" number="2"
+                 comment="The parameter service allows the user to subscribe to parameter value report and optionally be able to set new values.">
+      <mal:capabilitySet number="1">
+        <mal:pubsubIP name="monitorValue" number="1" comment="">
+          <mal:messages>
+            <mal:subscriptionKeys>
+              <mal:field name="parameterKey" canBeNull="false" comment="">
+                <mal:type area="MAL" name="Identifier"/>
+              </mal:field>
+              <mal:field name="parameterVersion" canBeNull="false" comment="">
+                <mal:type area="MAL" name="UInteger"/>
+              </mal:field>
+            </mal:subscriptionKeys>
+            <mal:publishNotify>
+              <mal:field name="timestamp" canBeNull="false" comment="">
+                <mal:type name="Time" area="MAL"/>
+              </mal:field>
+              <mal:field name="samplingTime" canBeNull="true" comment="">
+                <mal:type name="Time" area="MAL"/>
+              </mal:field>
+              <mal:field name="newValue" canBeNull="false" comment="">
+                <mal:type name="ParameterValueData" area="MC"/>
+              </mal:field>
+            </mal:publishNotify>
+          </mal:messages>
+        </mal:pubsubIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="2">
+        <mal:requestIP name="getValue" number="2" comment="">
+          <mal:messages>
+            <mal:request>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:request>
+            <mal:response>
+              <mal:field name="parameterValues" canBeNull="false" comment="">
+                <mal:type list="true" name="ParameterValue" area="MC"/>
+              </mal:field>
+            </mal:response>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:requestIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="3">
+        <mal:submitIP name="setValue" number="3" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="newRawValues" canBeNull="false" comment="">
+                <mal:type list="true" name="NullableAttribute" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="INVALID"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="READONLY"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="4">
+        <mal:requestIP name="getReportingConfiguration" number="9" comment="">
+          <mal:messages>
+            <mal:request>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:request>
+            <mal:response>
+              <mal:field name="reportConfigs" canBeNull="false" comment="">
+                <mal:type list="true" name="ReportConfiguration" area="MC"/>
+              </mal:field>
+            </mal:response>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="A list of the indexes of the error values shall be contained in the extra information field.">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:requestIP>
+        <mal:submitIP name="enableReporting" number="10" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+        <mal:submitIP name="disableReporting" number="11" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+        <mal:submitIP name="setReportingPeriod" number="12" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="reportInterval" canBeNull="false" comment="">
+                <mal:type name="Duration" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="INVALID"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+      </mal:capabilitySet>
+    </mal:service>
+    <mal:service xsi:type="com:ExtendedServiceType" name="Alert" number="3"
+                 comment="The alert service defines the structures and patterns for the publishing and monitoring of alerts.">
+      <mal:capabilitySet number="1">
+        <mal:requestIP name="getAlertConfiguration" number="6" comment="">
+          <mal:messages>
+            <mal:request>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:request>
+            <mal:response>
+              <mal:field name="alertConfigs" canBeNull="false" comment="">
+                <mal:type list="true" name="AlertConfiguration" area="MC"/>
+              </mal:field>
+            </mal:response>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:requestIP>
+        <mal:submitIP name="enableGeneration" number="7" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+        <mal:submitIP name="disableGeneration" number="8" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="4">
+        <mal:pubsubIP name="monitorAlert" number="9" comment="">
+          <mal:messages>
+            <mal:subscriptionKeys>
+              <mal:field name="alertKey" canBeNull="false" comment="">
+                <mal:type area="MAL" name="Identifier"/>
+              </mal:field>
+              <mal:field name="alertVersion" canBeNull="false" comment="">
+                <mal:type area="MAL" name="UInteger"/>
+              </mal:field>
+              <mal:field name="alertSeverity" canBeNull="false" comment="">
+                <mal:type area="MAL" name="UOctet"/>
+              </mal:field>
+            </mal:subscriptionKeys>
+            <mal:publishNotify>
+              <mal:field name="timestamp" canBeNull="false" comment="">
+                <mal:type name="Time" area="MAL"/>
+              </mal:field>
+              <mal:field name="arguments" canBeNull="true" comment="">
+                <mal:type list="true" name="AttributeValue" area="MC"/>
+              </mal:field>
+            </mal:publishNotify>
+          </mal:messages>
+        </mal:pubsubIP>
+      </mal:capabilitySet>
+    </mal:service>
+    <mal:service xsi:type="com:ExtendedServiceType" name="Aggregation" number="6"
+                 comment="The aggregation service allows the user to acquire several parameter values in a single request.">
+      <mal:capabilitySet number="1">
+        <mal:pubsubIP name="monitorValue" number="1" comment="">
+          <mal:messages>
+            <mal:subscriptionKeys>
+              <mal:field name="aggregationKey" canBeNull="false" comment="">
+                <mal:type area="MAL" name="Identifier"/>
+              </mal:field>
+              <mal:field name="aggregationVersion" canBeNull="false" comment="">
+                <mal:type area="MAL" name="UInteger"/>
+              </mal:field>
+            </mal:subscriptionKeys>
+            <mal:publishNotify>
+              <mal:field name="timestamp" canBeNull="false" comment="">
+                <mal:type name="Time" area="MAL"/>
+              </mal:field>
+              <mal:field name="values" canBeNull="false" comment="">
+                <mal:type list="true" name="ParameterValueData" area="MC"/>
+              </mal:field>
+            </mal:publishNotify>
+          </mal:messages>
+        </mal:pubsubIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="2">
+        <mal:requestIP name="getValue" number="2" comment="">
+          <mal:messages>
+            <mal:request>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:request>
+            <mal:response>
+              <mal:field name="aggregationValue" canBeNull="false" comment="">
+                <mal:type name="AggregationValue" area="MC"/>
+              </mal:field>
+            </mal:response>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:requestIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="3">
+        <mal:requestIP name="getReportingConfiguration" number="9" comment="">
+          <mal:messages>
+            <mal:request>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:request>
+            <mal:response>
+              <mal:field name="reportConfigs" canBeNull="false" comment="">
+                <mal:type list="true" name="ReportConfiguration" area="MC"/>
+              </mal:field>
+            </mal:response>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:requestIP>
+        <mal:submitIP name="enableReporting" number="10" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+        <mal:submitIP name="disableReporting" number="11" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+        <mal:submitIP name="setReportingPeriod" number="12" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="reportInterval" canBeNull="false" comment="">
+                <mal:type name="Duration" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="INVALID"/>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+      </mal:capabilitySet>
+      <mal:capabilitySet number="5">
+        <mal:submitIP name="addAggregation" number="6" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="newObjects" canBeNull="false" comment="">
+                <mal:type list="true" name="AggregationDefinition" area="MC"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="DUPLICATE"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+            <mal:errorRef comment="">
+              <mal:type name="INVALID"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+        <mal:submitIP name="removeAggregation" number="8" comment="">
+          <mal:messages>
+            <mal:submit>
+              <mal:field name="domain" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+              <mal:field name="keys" canBeNull="false" comment="">
+                <mal:type list="true" name="Identifier" area="MAL"/>
+              </mal:field>
+            </mal:submit>
+          </mal:messages>
+          <mal:errors>
+            <mal:errorRef comment="">
+              <mal:type name="UNKNOWN" area="MAL"/>
+              <mal:extraInformation comment="">
+                <mal:type list="true" name="UInteger" area="MAL"/>
+              </mal:extraInformation>
+            </mal:errorRef>
+          </mal:errors>
+        </mal:submitIP>
+      </mal:capabilitySet>
+    </mal:service>
+    <mal:service xsi:type="com:ExtendedServiceType" name="Packet" number="9"
+                 comment="The packet service allows a consumer to subscribe to a subset of the space packets, with filtering capabilities based on packets metadata.">
+      <mal:capabilitySet number="1">
+        <mal:pubsubIP name="deliverPacket" number="1" comment="">
+          <mal:messages>
+            <mal:subscriptionKeys>
+              <mal:field name="apid" canBeNull="false" comment="">
+                <mal:type area="MAL" name="UShort"/>
+              </mal:field>
+            </mal:subscriptionKeys>
+            <mal:publishNotify>
+              <mal:field name="timestamp" canBeNull="false" comment="">
+                <mal:type name="Time" area="MAL"/>
+              </mal:field>
+              <mal:field name="spacePacket" canBeNull="false" comment="">
+                <mal:type name="Blob" area="MAL"/>
+              </mal:field>
+            </mal:publishNotify>
+          </mal:messages>
+        </mal:pubsubIP>
+      </mal:capabilitySet>
+    </mal:service>
+    <mal:dataTypes>
+      <mal:enumeration name="Severity" shortFormPart="6" comment="">
+        <mal:item value="INFORMATIONAL" nvalue="1" comment=""/>
+        <mal:item value="WARNING" nvalue="2" comment=""/>
+        <mal:item value="ALARM" nvalue="3" comment=""/>
+        <mal:item value="SEVERE" nvalue="4" comment=""/>
+        <mal:item value="CRITICAL" nvalue="5" comment=""/>
+      </mal:enumeration>
+      <mal:composite name="ArgumentDefinition" shortFormPart="1" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="argId" canBeNull="false" comment="">
+          <mal:type name="Identifier" area="MAL"/>
+        </mal:field>
+        <mal:field name="description" canBeNull="true" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="rawType" canBeNull="false" comment="">
+          <mal:type name="AttributeType" area="MAL"/>
+        </mal:field>
+        <mal:field name="rawUnit" canBeNull="true" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="convertedType" canBeNull="true" comment="">
+          <mal:type name="AttributeType" area="MAL"/>
+        </mal:field>
+        <mal:field name="convertedUnit" canBeNull="true" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="AttributeValue" shortFormPart="2" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="value" canBeNull="true" comment="">
+          <mal:type name="Attribute" area="MAL"/>
+        </mal:field>
+        <mal:field name="isRawValue" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:enumeration name="ActionCategory" shortFormPart="10" comment="">
+        <mal:item value="DEFAULT" nvalue="1" comment=""/>
+        <mal:item value="HIPRIORITY" nvalue="2" comment=""/>
+        <mal:item value="CRITICAL" nvalue="3" comment=""/>
+      </mal:enumeration>
+      <mal:composite name="ActionDefinition" shortFormPart="11" comment="">
+        <mal:extends>
+          <mal:type name="Object" area="MAL"/>
+        </mal:extends>
+        <mal:field name="description" canBeNull="false" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="category" canBeNull="false" comment="">
+          <mal:type name="ActionCategory" area="MC"/>
+        </mal:field>
+        <mal:field name="progressStepCount" canBeNull="false" comment="">
+          <mal:type name="UShort" area="MAL"/>
+        </mal:field>
+        <mal:field name="arguments" canBeNull="true" comment="">
+          <mal:type list="true" name="ArgumentDefinition" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ActionExecutionRequest" shortFormPart="12" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="requestId" canBeNull="false" comment="">
+          <mal:type name="Long" area="MAL"/>
+        </mal:field>
+        <mal:field name="actionRef" canBeNull="false" comment="">
+          <mal:type name="ObjectRef(ActionDefinition)" area="MC"/>
+        </mal:field>
+        <mal:field name="source" canBeNull="true" comment="">
+          <mal:type name="ObjectRef" area="MAL"/>
+        </mal:field>
+        <mal:field name="stageStartedRequired" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+        <mal:field name="stageProgressRequired" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+        <mal:field name="stageCompletedRequired" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+        <mal:field name="argumentValues" comment="">
+          <mal:type list="true" name="AttributeValue" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ActionProgressBaseEvent" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="success" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ActionProgressStartEvent" shortFormPart="13" comment="">
+        <mal:extends>
+          <mal:type name="ActionProgressBaseEvent" area="MC"/>
+        </mal:extends>
+      </mal:composite>
+      <mal:composite name="ActionProgressExecutionEvent" shortFormPart="14" comment="">
+        <mal:extends>
+          <mal:type name="ActionProgressBaseEvent" area="MC"/>
+        </mal:extends>
+        <mal:field name="stageCount" canBeNull="false" comment="">
+          <mal:type name="UInteger" area="MAL"/>
+        </mal:field>
+        <mal:field name="executionStage" canBeNull="false" comment="">
+          <mal:type name="UInteger" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ActionProgressCompletionEvent" shortFormPart="15" comment="">
+        <mal:extends>
+          <mal:type name="ActionProgressBaseEvent" area="MC"/>
+        </mal:extends>
+      </mal:composite>
+      <mal:enumeration name="ValidityState" shortFormPart="20" comment="">
+        <mal:item value="VALID" nvalue="0" comment=""/>
+        <mal:item value="EXPIRED" nvalue="1" comment=""/>
+        <mal:item value="INVALID_RAW" nvalue="2" comment=""/>
+        <mal:item value="INVALID_CONVERSION" nvalue="3" comment=""/>
+        <mal:item value="UNVERIFIED" nvalue="4" comment=""/>
+        <mal:item value="INVALID" nvalue="5" comment=""/>
+      </mal:enumeration>
+      <mal:composite name="ParameterDefinition" shortFormPart="21" comment="">
+        <mal:extends>
+          <mal:type name="Object" area="MAL"/>
+        </mal:extends>
+        <mal:field name="description" canBeNull="false" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="rawType" canBeNull="false" comment="">
+          <mal:type name="AttributeType" area="MAL"/>
+        </mal:field>
+        <mal:field name="rawUnit" canBeNull="true" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="convertedType" canBeNull="true" comment="">
+          <mal:type name="AttributeType" area="MAL"/>
+        </mal:field>
+        <mal:field name="convertedUnit" canBeNull="true" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ParameterValueData" shortFormPart="22" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="validityState" canBeNull="false" comment="">
+          <mal:type name="ValidityState" area="MC"/>
+        </mal:field>
+        <mal:field name="rawValue" canBeNull="true" comment="">
+          <mal:type name="Attribute" area="MAL"/>
+        </mal:field>
+        <mal:field name="convertedValue" canBeNull="true" comment="">
+          <mal:type name="Attribute" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ParameterValue" shortFormPart="23" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="paramRef" canBeNull="false" comment="">
+          <mal:type name="ObjectRef(ParameterDefinition)" area="MC"/>
+        </mal:field>
+        <mal:field name="timestamp" canBeNull="false" comment="">
+          <mal:type name="Time" area="MAL"/>
+        </mal:field>
+        <mal:field name="samplingTime" canBeNull="true" comment="">
+          <mal:type name="Time" area="MAL"/>
+        </mal:field>
+        <mal:field name="value" canBeNull="false" comment="">
+          <mal:type name="ParameterValueData" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="ReportConfiguration" shortFormPart="24" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="generationEnabled" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+        <mal:field name="reportInterval" canBeNull="false" comment="">
+          <mal:type name="Duration" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="AlertDefinition" shortFormPart="30" comment="">
+        <mal:extends>
+          <mal:type name="Object" area="MAL"/>
+        </mal:extends>
+        <mal:field name="description" canBeNull="false" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="severity" canBeNull="false" comment="">
+          <mal:type name="Severity" area="MC"/>
+        </mal:field>
+        <mal:field name="arguments" canBeNull="true" comment="">
+          <mal:type list="true" name="ArgumentDefinition" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="AlertEvent" shortFormPart="31" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="alertRef" canBeNull="false" comment="">
+          <mal:type name="ObjectRef(AlertDefinition)" area="MC"/>
+        </mal:field>
+        <mal:field name="timestamp" canBeNull="false" comment="">
+          <mal:type name="Time" area="MAL"/>
+        </mal:field>
+        <mal:field name="argumentValues" canBeNull="true" comment="">
+          <mal:type list="true" name="AttributeValue" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="AlertConfiguration" shortFormPart="32" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="generationEnabled" canBeNull="false" comment="">
+          <mal:type name="Boolean" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="AggregationDefinition" shortFormPart="60" comment="">
+        <mal:extends>
+          <mal:type name="Object" area="MAL"/>
+        </mal:extends>
+        <mal:field name="description" canBeNull="false" comment="">
+          <mal:type name="String" area="MAL"/>
+        </mal:field>
+        <mal:field name="category" canBeNull="false" comment="">
+          <mal:type name="Identifier" area="MAL"/>
+        </mal:field>
+        <mal:field name="parameters" canBeNull="false" comment="">
+          <mal:type list="true" name="ObjectRef(ParameterDefinition)" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="AggregationValue" shortFormPart="61" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="aggregationRef" canBeNull="false" comment="">
+          <mal:type name="ObjectRef(AggregationDefinition)" area="MC"/>
+        </mal:field>
+        <mal:field name="timestamp" canBeNull="false" comment="">
+          <mal:type name="Time" area="MAL"/>
+        </mal:field>
+        <mal:field name="parameterValues" canBeNull="false" comment="">
+          <mal:type list="true" name="ParameterValueData" area="MC"/>
+        </mal:field>
+      </mal:composite>
+      <mal:composite name="PacketValue" shortFormPart="90" comment="">
+        <mal:extends>
+          <mal:type name="Composite" area="MAL"/>
+        </mal:extends>
+        <mal:field name="payload" canBeNull="false" comment="">
+          <mal:type name="Blob" area="MAL"/>
+        </mal:field>
+        <mal:field name="timestamp" canBeNull="false" comment="">
+          <mal:type name="Time" area="MAL"/>
+        </mal:field>
+        <mal:field name="apid" canBeNull="false" comment="">
+          <mal:type name="UShort" area="MAL"/>
+        </mal:field>
+        <mal:field name="keyValues" canBeNull="true" comment="">
+          <mal:type list="true" name="NullableAttribute" area="MAL"/>
+        </mal:field>
+      </mal:composite>
+    </mal:dataTypes>
+    <mal:errors>
+      <mal:error name="READONLY" number="1" comment="Operation specific"/>
+      <mal:error name="DUPLICATE" number="2" comment="Operation specific"/>
+      <mal:error name="INVALID" number="3" comment="Operation specific"/>
+    </mal:errors>
+  </mal:area>
+</mal:specification>
